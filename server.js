@@ -7,6 +7,8 @@ dotenv.config();
 
 import authRoutes from './src/routes/auth.js';
 
+app.use('/api/auth', authRoutes);
+
 const app = express();
 
 // Middlewares
