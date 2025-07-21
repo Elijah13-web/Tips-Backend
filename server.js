@@ -1,4 +1,3 @@
-// server.js
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -14,14 +13,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Connect MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.error('❌ MongoDB connection error:', err));
 
+// Simple health check
 app.get('/', (req, res) => {
-  res.send('Hello from Tips backend!');
+  res.json({ success: true, message: 'Hello from Tips backend!' });
 });
 
+// Routes
 app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
