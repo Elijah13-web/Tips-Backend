@@ -10,6 +10,7 @@ dotenv.config();
 // Import routes
 import authRoutes from './src/routes/auth.js';
 import subscribeRoute from './src/routes/subscribe.js';
+import applicationRoute from './src/routes/application.js';
 
 // Initialize app
 const app = express();
@@ -28,7 +29,9 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 app.use('/api/auth', authRoutes);           
-app.use('/subscribe', subscribeRoute);      
+app.use('/subscribe', subscribeRoute); 
+app.use('/api/apply', applicationRoute);
+
 
 // Simple health check
 app.get('/', (req, res) => {
