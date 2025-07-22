@@ -1,49 +1,36 @@
 import express from 'express';
-import nodemailer from 'nodemailer';
-import Subscriber from '../models/Subscriber.js';
+import Subscriber from '../models/Subscriber.js'; // your Mongoose model
+import sendEmail from '../utils/sendEmail.js';   // your function to send email
 
 const router = express.Router();
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'ajiboyeelijah242@gmail.com',
-    pass: 'ajiboye'
-  }
-});
-
 router.post('/', async (req, res) => {
   const { email } = req.body;
-  if (!email) return res.json({ success: false, message: 'Email is required' });
+
+  if (!email) return res.status(400).json({ success: false, message: "Email is required" });
 
   try {
-    // Save to MongoDB (ignore duplicate)
+    // Check if already subscribed
     const existing = await Subscriber.findOne({ email });
-    if (!existing) {
-      await Subscriber.create({ email });
-      console.log(`✅ Saved to DB: ${email}`);
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Email already subscribed" });
     }
 
-    // Send notification to you
-    await transporter.sendMail({
-      from: '"Newsletter Bot" <YOUR_EMAIL@gmail.com>',
-      to: 'YOUR_EMAIL@gmail.com',
-      subject: 'New Newsletter Subscriber!',
-      html: `<p>New subscriber: <strong>${email}</strong></p>`
-    });
+    // Save to DB
+    const newSubscriber = new Subscriber({ email });
+    await newSubscriber.save();
 
-    // Send thank you email to user
-    await transporter.sendMail({
-      from: '"Triumphant Newsletter" <YOUR_EMAIL@gmail.com>',
-      to: email,
-      subject: 'Thank you for subscribing!',
-      html: `<p>Hi there! 👋<br/>Thank you for subscribing to our newsletter. We'll keep you updated!</p>`
-    });
+    // Send confirmation email
+    await sendEmail(
+      email,
+      "Thanks for subscribing!",
+      "You have successfully subscribed to our newsletter."
+    );
 
-    res.json({ success: true, message: 'Subscribed successfully' });
+    res.json({ success: true, message: "Subscription successful" });
   } catch (error) {
     console.error('❌ Subscription error:', error);
-    res.json({ success: false, message: 'Failed to subscribe' });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 
