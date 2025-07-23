@@ -2,6 +2,7 @@ import express from 'express';
 import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import sendEmail from '../utils/sendEmail.js';
 
 const router = express.Router();
 
@@ -48,6 +49,16 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    try {
+      await sendEmail(
+        process.env.ADMIN_EMAIL,
+        'New user login',
+        `User ${user.email} just logged in.`
+      );
+    } catch (emailErr) {
+      console.error('❌ Failed to send login notification email:', emailErr);
+    }
 
     res.json({
       success: true,

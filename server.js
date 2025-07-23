@@ -4,13 +4,13 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-// Load env variables
 dotenv.config();
 
 // Import routes
 import authRoutes from './src/routes/auth.js';
 import subscribeRoute from './src/routes/subscribe.js';
 import applicationRoute from './src/routes/application.js';
+import sendEmail from './src/utils/sendEmail.js';
 
 // Initialize app
 const app = express();
@@ -41,3 +41,15 @@ app.get('/', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+
+
+app.get('/test-email', async (req, res) => {
+  try {
+    await sendEmail('your_email@gmail.com', 'Test Email', 'This is a test');
+    res.send('✅ Email sent');
+  } catch (err) {
+    console.error('❌ Test email error:', err);
+    res.send('❌ Email failed: ' + err.message);
+  }
+});
