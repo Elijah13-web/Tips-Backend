@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
     const newSubscriber = new Subscriber({ email });
     await newSubscriber.save();
 
-    // Send confirmation email
+    // Send confirmation email   
     await sendEmail(
       email,
       "Thanks for subscribing!",
