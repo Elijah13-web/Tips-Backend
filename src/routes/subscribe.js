@@ -1,38 +1,32 @@
-import express from 'express';
-import Subscriber from '../models/Subscriber.js'; // your Mongoose model
-import sendEmail from '../utils/sendEmail.js';   // your function to send email
+import express from "express";
+import sendEmail from "../utils/sendEmail.js";
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-  const { email } = req.body;
-
-  if (!email) return res.status(400).json({ success: false, message: "Email is required" });
-
+router.post("/", async (req, res) => {
   try {
-    // Check if already subscribed
-    const existing = await Subscriber.findOne({ email });
-    if (existing) {
-      return res.status(400).json({ success: false, message: "Email already subscribed" });
+    console.log("📩 /subscribe hit with body:", req.body);
+    const { email } = req.body;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ success: false, message: "Invalid email address." });
     }
 
-    // Save to DB
-    const newSubscriber = new Subscriber({ email });
-    await newSubscriber.save();
-
-    // Send confirmation email   
     await sendEmail(
       email,
-      "Thanks for subscribing!",
-      "You have successfully subscribed to our newsletter."
+      "🎉 Welcome to TIPS Newsletter",
+      `<h2>Hi there!</h2><p>Thank you for subscribing to the TIPS Newsletter.</p><p>You’ll now receive the latest news and updates.</p>`
     );
 
-    res.json({ success: true, message: "Subscription successful" });
+    console.log("✅ Subscription email sent to:", email);
+    res.json({ success: true, message: "Subscribed successfully." });
   } catch (error) {
-    console.error('❌ Subscription error:', error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("🔥 Subscribe route error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to subscribe. Please try again later.",
+    });
   }
 });
 
 export default router;
-  
