@@ -64,7 +64,6 @@ app.get('/test-email', async (req, res) => {
     res.status(500).send('❌ Email failed: ' + err.message);
   }
 });
-
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

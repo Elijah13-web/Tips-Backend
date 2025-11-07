@@ -2,16 +2,21 @@ import nodemailer from "nodemailer";
 
 const sendEmail = async (to, subject, html) => {
   try {
-    // 📨 Create transporter
+    // 🧠 Debugging: Check that environment variables are loading correctly
+    console.log("🧠 ADMIN_EMAIL:", process.env.ADMIN_EMAIL);
+    console.log(
+      "🧠 ADMIN_EMAIL_PASS:",
+      process.env.ADMIN_EMAIL_PASS ? "Loaded ✅" : "❌ Missing"
+    );
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.ADMIN_EMAIL,        // ✅ Your Gmail address
-        pass: process.env.ADMIN_EMAIL_PASS,   // ✅ Your Gmail app password
+        user: process.env.ADMIN_EMAIL,       // ✅ from .env
+        pass: process.env.ADMIN_EMAIL_PASS,  // ✅ from .env
       },
     });
 
-    // ✉️ Define mail options
     const mailOptions = {
       from: `"TIPS Newsletter" <${process.env.ADMIN_EMAIL}>`,
       to,
@@ -19,7 +24,6 @@ const sendEmail = async (to, subject, html) => {
       html,
     };
 
-    // 🚀 Send email
     await transporter.sendMail(mailOptions);
     console.log(`✅ Email sent to ${to}`);
   } catch (error) {
