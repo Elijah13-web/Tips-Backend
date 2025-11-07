@@ -2,16 +2,16 @@ import nodemailer from "nodemailer";
 
 const sendEmail = async (to, subject, html) => {
   try {
-    // Create transporter using Gmail
+    // 📨 Create transporter
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.ADMIN_EMAIL,       
-        pass: process.env.GMAIL_APP_PASSWORD 
+        user: process.env.ADMIN_EMAIL,        // ✅ Your Gmail address
+        pass: process.env.ADMIN_EMAIL_PASS,   // ✅ Your Gmail app password
       },
     });
 
-    // Email options
+    // ✉️ Define mail options
     const mailOptions = {
       from: `"TIPS Newsletter" <${process.env.ADMIN_EMAIL}>`,
       to,
@@ -19,9 +19,9 @@ const sendEmail = async (to, subject, html) => {
       html,
     };
 
-    // Send mail
+    // 🚀 Send email
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent to ${to} (${subject})`);
+    console.log(`✅ Email sent to ${to}`);
   } catch (error) {
     console.error("❌ Error sending email:", error.message);
     throw error;
