@@ -1,10 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const ApplicationSchema = new mongoose.Schema({
-  phone: { type: String, required: true },
-  email: { type: String, required: true },
-  fileUrl: { type: String }, // optional: store file URL if you later upload to cloud
-  createdAt: { type: Date, default: Date.now }
-});
+const ApplicationSchema = new mongoose.Schema(
+  {
+    phone: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    file: {
+      type: String,
+      default: null,
+    },
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model('Application', ApplicationSchema);
+export default mongoose.model("Application", ApplicationSchema);

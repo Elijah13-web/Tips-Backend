@@ -1,3 +1,6 @@
+import fs from 'fs';
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
+
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';

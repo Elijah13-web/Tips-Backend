@@ -1,30 +1,42 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
-const sendEmail = async (to, subject, html) => {
+dotenv.config();
+
+const sendEmail = async (to, subject, html, attachmentPath = null) => {
   try {
-    console.log("📤 Sending email to:", to);
-
+    // ✅ Create transporter
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: process.env.ADMIN_EMAIL,
         pass: process.env.ADMIN_EMAIL_PASS,
       },
     });
 
+    // ✅ Mail options
     const mailOptions = {
-      from: `"TIPS Newsletter" <${process.env.ADMIN_EMAIL}>`,
+      from: `"Tips Education" <${process.env.ADMIN_EMAIL}>`,
       to,
       subject,
       html,
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent:", info.response);
-    return info;
+    // ✅ Add attachment if provided
+    if (attachmentPath) {
+      mailOptions.attachments = [
+        {
+          filename: attachmentPath.split('/').pop(),
+          path: attachmentPath,
+        },
+      ];
+    }
+
+    // ✅ Send mail
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Email sent successfully to ${to}`);
   } catch (error) {
-    console.error("❌ Error sending email:", error);
-    throw error;
+    console.error('❌ Email sending failed:', error);
   }
 };
 
