@@ -1,6 +1,4 @@
 import fs from 'fs';
-if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
-
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -12,14 +10,23 @@ import sendEmail from './src/utils/sendEmail.js';
 
 dotenv.config();
 
+// ✅ Ensure uploads folder exists
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
+
 const app = express();
 
-// ✅ CORS Configuration
+// ✅ FIXED CORS Configuration
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
-  methods: ["GET", "POST"],
-  credentials: true
+  origin: [
+    "https://www.tips.edu.ng",   // frontend (Vercel)
+    "https://tips.edu.ng",       // direct domain
+    "http://localhost:5173"      // local dev
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 }));
+app.options("*", cors()); // handles preflight requests
 
 app.use(express.json());
 
