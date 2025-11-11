@@ -10,17 +10,16 @@ import sendEmail from './src/utils/sendEmail.js';
 
 dotenv.config();
 
-// ✅ Ensure uploads folder exists
+// ✅ Create uploads folder if missing
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
 const app = express();
 
-// ✅ FIXED CORS Configuration
+// ✅ CORS Configuration
 app.use(cors({
   origin: [
-    "https://www.tips.edu.ng",   // frontend (Vercel)
-    "https://tips.edu.ng",       // direct domain
-    "http://localhost:5173"      // local dev
+    process.env.FRONTEND_URL, // e.g., https://www.tipsedu.ng
+    "http://localhost:5173"   // local dev
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -30,7 +29,7 @@ app.options("*", cors()); // handles preflight requests
 
 app.use(express.json());
 
-// 🕒 Log requests
+// 🕒 Request logging
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
@@ -40,25 +39,21 @@ app.use((req, res, next) => {
 });
 
 // ✅ MongoDB Connection
-console.time('⏱️ MongoDB connection time');
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.timeEnd('⏱️ MongoDB connection time');
-    console.log('✅ MongoDB connected');
-  })
+  .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// ✅ Routes
+// ✅ Routes (use relative paths, never full URLs)
 app.use('/api/auth', authRoutes);
 app.use('/subscribe', subscribeRoute);
 app.use('/api/apply', applicationRoute);
 
-// Health Check
+// Health check
 app.get('/', (req, res) => {
   res.json({ success: true, message: 'Hello from Tips backend!' });
 });
 
-// 🧪 Email test endpoint
+// Test email endpoint
 app.get('/test-email', async (req, res) => {
   try {
     await sendEmail(process.env.ADMIN_EMAIL, 'Test Email', '<p>This is a test email from Tips backend.</p>');

@@ -6,7 +6,6 @@ import sendEmail from '../utils/sendEmail.js';
 
 const router = express.Router();
 
-// ✅ Multer setup — handles file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname),
@@ -44,7 +43,6 @@ router.post('/', upload.single('file'), async (req, res) => {
       ${filePath ? `<p><b>Uploaded File:</b> <a href="${filePath}">${filePath}</a></p>` : ''}
     `;
 
-    // ✅ Send admin notification email (with file if available)
     const absoluteFilePath = filePath ? path.resolve(`.${filePath}`) : null;
     await sendEmail(
       process.env.ADMIN_EMAIL,
@@ -64,11 +62,6 @@ router.post('/', upload.single('file'), async (req, res) => {
   }
 });
 
-/* ===========================================================
-   👀  ADMIN ROUTE TO VIEW ALL APPLICATIONS
-   Access: /api/apply/all?adminKey=YOUR_KEY
-   Protects route using ADMIN_KEY in .env
-=========================================================== */
 router.get('/all', async (req, res) => {
   try {
     const { adminKey } = req.query;

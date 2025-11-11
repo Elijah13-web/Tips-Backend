@@ -5,7 +5,6 @@ dotenv.config();
 
 const sendEmail = async (to, subject, html, attachmentPath = null) => {
   try {
-    // ✅ Create transporter
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
