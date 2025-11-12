@@ -16,16 +16,28 @@ if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 const app = express();
 
 // ✅ CORS Configuration
-app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL, // e.g., https://www.tipsedu.ng
-    "http://localhost:5173"   // local dev
-  ],
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL, // e.g., https://www.tipsedu.ng
+      "http://localhost:5173"   // local dev
+    ];
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-}));
-app.options("*", cors()); // handles preflight requests
+  optionsSuccessStatus: 200 // For legacy browser support
+};
+
+app.use(cors(corsOptions));
+// Handle preflight for all routes
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 
